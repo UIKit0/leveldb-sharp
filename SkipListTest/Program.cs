@@ -43,17 +43,17 @@ namespace SkipListTest
             Trace.Assert(!iter.Valid());
         }
 
-        static IEnumerator<ulong> LowerBoundEnum(SortedSet<ulong> ss, ulong n)
+        static Tuple<IEnumerator<ulong>, bool> LowerBoundEnum(SortedSet<ulong> ss, ulong n)
         {
             var iter = ss.GetEnumerator();
             while (iter.MoveNext())
             {
                 if (iter.Current >= n)
                 {
-                    return iter;
+                    return new Tuple<IEnumerator<ulong>, bool>(iter, true);
                 }
             }
-            return iter;
+            return new Tuple<IEnumerator<ulong>, bool>(iter, false);
         }
 
         void TestInsertAndLookup()
@@ -109,7 +109,13 @@ namespace SkipListTest
                 iter.Seek(i);
 
                 // Compare against model iterator
-                var modelIter = LowerBoundEnum(keys, i);
+                var modelIterTuple = LowerBoundEnum(keys, i);
+                if (!modelIterTuple.Item2)
+                {
+                    Trace.Assert(!iter.Valid());
+                    continue;
+                }
+                var modelIter = modelIterTuple.Item1;
                 for (int j = 0; j < 3; j++) {
                     Trace.Assert(iter.Valid());
                     Trace.Assert(modelIter.Current == iter.key());
