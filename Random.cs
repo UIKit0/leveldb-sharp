@@ -17,7 +17,7 @@ namespace leveldb
             seed_ = s & 0x7fffffffu;
         }
 
-        UInt32 Next()
+        public UInt32 Next()
         {
             // We are computing
             //       seed_ = (seed_ * A) % M,    where M = 2^31-1
@@ -40,16 +40,16 @@ namespace leveldb
 
         // Returns a uniformly distributed value in the range [0..n-1]
         // REQUIRES: n > 0
-        UInt32 Uniform(int n) { return Next() % (UInt32)n; }
+        public UInt32 Uniform(int n) { return Next() % (UInt32)n; }
 
         // Randomly returns true ~"1/n" of the time, and false otherwise.
         // REQUIRES: n > 0
-        bool OneIn(int n) { return (Next() % n) == 0; }
+        public bool OneIn(int n) { return (Next() % n) == 0; }
 
         // Skewed: pick "base" uniformly from range [0,max_log] and then
         // return "base" random bits.  The effect is to pick a number in the
         // range [0,2^max_log-1] with exponential bias towards smaller numbers.
-        UInt32 Skewed(int max_log)
+        public UInt32 Skewed(int max_log)
         {
             return Uniform(1 << (int)Uniform(max_log + 1));
         }
